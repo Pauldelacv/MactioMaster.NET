@@ -6,4 +6,8 @@
     <AssemblyName>RatioMaster.Core</AssemblyName>
   </PropertyGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="RatioMaster.Core.Tests" />
+  </ItemGroup>
+
 </Project>

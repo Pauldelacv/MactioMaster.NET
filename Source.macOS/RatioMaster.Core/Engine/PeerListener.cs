@@ -25,7 +25,13 @@ public sealed class PeerListener : IAsyncDisposable
     public PeerListener(byte[] infoHash, string percentEncodedPeerId, Action<string> log)
     {
         this.infoHash = infoHash;
-        this.peerId = DecodePeerId(percentEncodedPeerId);
+
+        // The wire protocol wants exactly 20 bytes even if the profile or a
+        // hand-typed override disagrees.
+        var decoded = DecodePeerId(percentEncodedPeerId);
+        this.peerId = new byte[20];
+        decoded.AsSpan(0, Math.Min(20, decoded.Length)).CopyTo(this.peerId);
+
         this.log = log;
     }
 
@@ -157,13 +163,13 @@ public sealed class PeerListener : IAsyncDisposable
     }
 
     /// <summary>
-    /// Turns the percent-encoded peer id used in tracker URLs back into the raw
-    /// 20 bytes the wire protocol expects.
+    /// Turns the percent-encoded peer id used in tracker URLs back into raw bytes.
+    /// A well-formed profile yields exactly 20.
     /// </summary>
-    internal static byte[] DecodePeerId(string encoded)
+    public static byte[] DecodePeerId(string encoded)
     {
         var bytes = new List<byte>(20);
-        for (var i = 0; i < encoded.Length && bytes.Count < 20; i++)
+        for (var i = 0; i < encoded.Length; i++)
         {
             if (encoded[i] == '%' && i + 2 < encoded.Length &&
                 byte.TryParse(encoded.AsSpan(i + 1, 2), System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out var decoded))
@@ -175,11 +181,6 @@ public sealed class PeerListener : IAsyncDisposable
             {
                 bytes.Add((byte)encoded[i]);
             }
-        }
-
-        while (bytes.Count < 20)
-        {
-            bytes.Add(0);
         }
 
         return [.. bytes];

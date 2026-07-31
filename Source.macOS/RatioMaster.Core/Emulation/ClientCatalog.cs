@@ -84,7 +84,9 @@ public static class ClientCatalog
         // ---------- uTorrent ----------
         "uTorrent 3.3.2" => UTorrent("3.3.2", "UT3320", "uTorrent/3320", "%18w", 10),
         "uTorrent 3.3.0" => UTorrent("3.3.0", "UT3300", "uTorrent/3300", "%b9s", 10),
-        "uTorrent 3.2.0" => UTorrent("3.2.0", "UT3200", "uTorrent/3200", "z8\0.", 10),
+        // The literal prefix decodes to four bytes here, not two, so the random
+        // tail is shortened to keep the peer id at the mandated 20 bytes.
+        "uTorrent 3.2.0" => UTorrent("3.2.0", "UT3200", "uTorrent/3200", "z8\0.", 8),
         "uTorrent 2.0.1 (build 19078)" => UTorrent("2.0.1 (build 19078)", "UT2010", "uTorrent/2010(19078)", "%86J", 10),
         "uTorrent 1.8.5 (build 17414)" => UTorrent("1.8.5 (build 17414)", "UT1850", "uTorrent/1850(17414)", "%06D", 10),
         "uTorrent 1.8.1-beta(11903)" => UTorrent("1.8.1-beta(11903)", "UT181B", "uTorrent/181B(11903)", "%7f.", 10),
