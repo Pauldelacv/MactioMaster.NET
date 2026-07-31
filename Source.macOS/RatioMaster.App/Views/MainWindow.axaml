@@ -1,0 +1,101 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:RatioMaster.App.ViewModels"
+        xmlns:views="clr-namespace:RatioMaster.App.Views"
+        x:Class="RatioMaster.App.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{Binding WindowTitle}"
+        Width="1080" Height="760"
+        MinWidth="900" MinHeight="620"
+        DragDrop.AllowDrop="True">
+
+  <NativeMenu.Menu>
+    <NativeMenu>
+      <NativeMenuItem Header="File">
+        <NativeMenu>
+          <NativeMenuItem Header="New Tab" Gesture="cmd+T" Click="OnNewTab" />
+          <NativeMenuItem Header="Open Torrent…" Gesture="cmd+O" Click="OnOpenTorrent" />
+          <NativeMenuItemSeparator />
+          <NativeMenuItem Header="Open Session…" Click="OnOpenSession" />
+          <NativeMenuItem Header="Open Session and Start…" Click="OnOpenSessionAndStart" />
+          <NativeMenuItem Header="Save Session…" Gesture="cmd+S" Click="OnSaveSession" />
+          <NativeMenuItemSeparator />
+          <NativeMenuItem Header="Save Log…" Click="OnSaveLog" />
+          <NativeMenuItemSeparator />
+          <NativeMenuItem Header="Close Tab" Gesture="cmd+W" Click="OnCloseTab" />
+        </NativeMenu>
+      </NativeMenuItem>
+
+      <NativeMenuItem Header="Torrent">
+        <NativeMenu>
+          <NativeMenuItem Header="Start" Gesture="cmd+R" Click="OnStart" />
+          <NativeMenuItem Header="Stop" Gesture="cmd+." Click="OnStop" />
+          <NativeMenuItem Header="Announce Now" Gesture="cmd+U" Click="OnAnnounceNow" />
+          <NativeMenuItemSeparator />
+          <NativeMenuItem Header="Start All" Click="OnStartAll" />
+          <NativeMenuItem Header="Stop All" Click="OnStopAll" />
+          <NativeMenuItemSeparator />
+          <NativeMenuItem Header="Set Upload Speed for All Tabs…" Click="OnSetUploadForAll" />
+          <NativeMenuItem Header="Set Download Speed for All Tabs…" Click="OnSetDownloadForAll" />
+        </NativeMenu>
+      </NativeMenuItem>
+
+      <NativeMenuItem Header="Settings">
+        <NativeMenu>
+          <NativeMenuItem Header="Save Current Tab as Defaults" Click="OnSaveDefaults" />
+          <NativeMenuItem Header="Reveal Settings Folder" Click="OnRevealSettings" />
+        </NativeMenu>
+      </NativeMenuItem>
+
+      <NativeMenuItem Header="Help">
+        <NativeMenu>
+          <NativeMenuItem Header="Project Page on GitHub" Click="OnOpenProjectPage" />
+          <NativeMenuItem Header="About RatioMaster.NET" Click="OnAbout" />
+        </NativeMenu>
+      </NativeMenuItem>
+    </NativeMenu>
+  </NativeMenu.Menu>
+
+  <Grid RowDefinitions="Auto,*,Auto">
+
+    <!-- Tab strip actions -->
+    <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8" Margin="12,10,12,0">
+      <Button Content="New tab" Click="OnNewTabClicked" />
+      <Button Content="Open torrent…" Click="OnOpenTorrentClicked" />
+      <Button Content="Rename tab" Click="OnRenameTabClicked" />
+      <Button Content="Close tab" Click="OnCloseTabClicked" />
+      <Border Width="1" Background="{DynamicResource SystemControlForegroundBaseLowBrush}" Margin="4,2" />
+      <Button Content="Start all" Click="OnStartAllClicked" />
+      <Button Content="Stop all" Click="OnStopAllClicked" />
+    </StackPanel>
+
+    <TabControl Grid.Row="1"
+                Margin="8,8,8,0"
+                ItemsSource="{Binding Tabs}"
+                SelectedItem="{Binding SelectedTab}">
+      <TabControl.ItemTemplate>
+        <DataTemplate x:DataType="vm:RatioTabViewModel">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <Ellipse Width="8" Height="8" VerticalAlignment="Center"
+                     Fill="{Binding IsRunning, Converter={x:Static views:Converters.RunningBrush}}" />
+            <TextBlock Text="{Binding Title}" />
+          </StackPanel>
+        </DataTemplate>
+      </TabControl.ItemTemplate>
+      <TabControl.ContentTemplate>
+        <DataTemplate x:DataType="vm:RatioTabViewModel">
+          <views:RatioView />
+        </DataTemplate>
+      </TabControl.ContentTemplate>
+    </TabControl>
+
+    <Border Grid.Row="2" Padding="14,6" Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}">
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBlock Grid.Column="0" VerticalAlignment="Center" Opacity="0.7"
+                   Text="Drop a .torrent or .session file anywhere on this window." />
+        <TextBlock Grid.Column="1" VerticalAlignment="Center" Opacity="0.7"
+                   Text="{Binding WindowTitle}" />
+      </Grid>
+    </Border>
+  </Grid>
+</Window>

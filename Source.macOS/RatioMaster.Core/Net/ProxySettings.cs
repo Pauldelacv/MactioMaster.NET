@@ -9,7 +9,7 @@ public enum ProxyKind
     Socks5 = 4,
 }
 
-public sealed class ProxySettings
+public sealed record ProxySettings
 {
     public static readonly ProxySettings Direct = new();
 

@@ -1,0 +1,261 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:RatioMaster.App.ViewModels"
+             x:Class="RatioMaster.App.Views.RatioView"
+             x:DataType="vm:RatioTabViewModel">
+
+  <Grid ColumnDefinitions="*,12,1.15*" Margin="12">
+
+    <!-- ================= Left column: configuration ================= -->
+    <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto">
+      <StackPanel>
+
+        <!-- Torrent -->
+        <Border Classes="card">
+          <StackPanel Spacing="8">
+            <TextBlock Classes="section" Text="TORRENT" />
+
+            <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto" >
+              <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="File" />
+              <TextBox   Grid.Row="0" Grid.Column="1" Text="{Binding TorrentPath}" IsReadOnly="True" Watermark="No torrent loaded" />
+              <Button    Grid.Row="0" Grid.Column="2" Content="Browse…" Margin="8,0,0,0" Click="OnBrowse" />
+
+              <TextBlock Grid.Row="1" Grid.Column="0" Classes="label" Text="Tracker" Margin="0,8,8,0" />
+              <TextBox   Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,8,0,0"
+                         Text="{Binding TrackerUrl}" IsEnabled="{Binding IsIdle}" />
+
+              <TextBlock Grid.Row="2" Grid.Column="0" Classes="label" Text="Info hash" Margin="0,8,8,0" />
+              <TextBox   Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,8,0,0"
+                         Classes="stat" Text="{Binding InfoHash}" IsReadOnly="True" />
+
+              <TextBlock Grid.Row="3" Grid.Column="0" Classes="label" Text="Size" Margin="0,8,8,0" />
+              <TextBlock Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,8,0,0"
+                         VerticalAlignment="Center" Text="{Binding TorrentSize}" />
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- Client emulation -->
+        <Border Classes="card">
+          <StackPanel Spacing="8">
+            <TextBlock Classes="section" Text="CLIENT EMULATION" />
+
+            <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto">
+              <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="Client" />
+              <ComboBox  Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch"
+                         ItemsSource="{Binding Families}" SelectedItem="{Binding ClientFamily}"
+                         IsEnabled="{Binding IsIdle}" />
+              <TextBlock Grid.Row="0" Grid.Column="2" Classes="label" Text="Version" Margin="12,0,8,0" />
+              <ComboBox  Grid.Row="0" Grid.Column="3" HorizontalAlignment="Stretch"
+                         ItemsSource="{Binding Versions}" SelectedItem="{Binding ClientVersion}"
+                         IsEnabled="{Binding IsIdle}" />
+            </Grid>
+
+            <CheckBox Content="Generate new identifiers when the client changes"
+                      IsChecked="{Binding GenerateNewIdentifiers}" IsEnabled="{Binding IsIdle}" />
+
+            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" >
+              <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="Peer ID" />
+              <TextBox   Grid.Row="0" Grid.Column="1" Classes="stat" Text="{Binding CustomPeerId}" IsEnabled="{Binding IsIdle}" />
+
+              <TextBlock Grid.Row="1" Grid.Column="0" Classes="label" Text="Key" Margin="0,6,8,0" />
+              <TextBox   Grid.Row="1" Grid.Column="1" Classes="stat" Margin="0,6,0,0" Text="{Binding CustomKey}" IsEnabled="{Binding IsIdle}" />
+
+              <TextBlock Grid.Row="2" Grid.Column="0" Classes="label" Text="Port" Margin="0,6,8,0" />
+              <TextBox   Grid.Row="2" Grid.Column="1" Margin="0,6,0,0" Text="{Binding Port}" IsEnabled="{Binding IsIdle}" />
+
+              <TextBlock Grid.Row="3" Grid.Column="0" Classes="label" Text="numwant" Margin="0,6,8,0" />
+              <TextBox   Grid.Row="3" Grid.Column="1" Margin="0,6,0,0" Text="{Binding NumWant}" IsEnabled="{Binding IsIdle}" />
+            </Grid>
+
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Grid.Column="0" VerticalAlignment="Center" Opacity="0.7" FontSize="12"
+                         TextWrapping="Wrap" Text="{Binding IdentifierStatus}" />
+              <Button Grid.Column="1" Content="Regenerate"
+                      Command="{Binding GenerateIdentifiersCommand}" IsEnabled="{Binding IsIdle}" />
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- Speeds -->
+        <Border Classes="card">
+          <StackPanel Spacing="8">
+            <TextBlock Classes="section" Text="SPEEDS" />
+
+            <Grid ColumnDefinitions="Auto,110,Auto,110" RowDefinitions="Auto,Auto,Auto">
+              <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="Upload KiB/s" />
+              <NumericUpDown Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="1000000" Increment="10"
+                             FormatString="0" Value="{Binding UploadRateKiB}" />
+              <TextBlock Grid.Row="0" Grid.Column="2" Classes="label" Text="Download KiB/s" Margin="12,0,8,0" />
+              <NumericUpDown Grid.Row="0" Grid.Column="3" Minimum="0" Maximum="1000000" Increment="10"
+                             FormatString="0" Value="{Binding DownloadRateKiB}" />
+
+              <TextBlock Grid.Row="1" Grid.Column="0" Classes="label" Text="Interval s" Margin="0,8,8,0" />
+              <NumericUpDown Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Minimum="60" Maximum="3600" Increment="60"
+                             FormatString="0" Value="{Binding IntervalSeconds}" IsEnabled="{Binding IsIdle}" />
+              <TextBlock Grid.Row="1" Grid.Column="2" Classes="label" Text="Finished %" Margin="12,8,8,0" />
+              <NumericUpDown Grid.Row="1" Grid.Column="3" Margin="0,8,0,0" Minimum="0" Maximum="100" Increment="1"
+                             FormatString="0.##" Value="{Binding FinishedPercent}" IsEnabled="{Binding IsIdle}" />
+            </Grid>
+
+            <Separator Margin="0,4" />
+
+            <CheckBox Content="Jitter the upload rate each second (KiB)" IsChecked="{Binding RandomiseUpload}" />
+            <Grid ColumnDefinitions="Auto,90,Auto,90" IsEnabled="{Binding RandomiseUpload}">
+              <TextBlock Grid.Column="0" Classes="label" Text="min" />
+              <NumericUpDown Grid.Column="1" Minimum="0" Maximum="100000" FormatString="0" Value="{Binding RandomUploadMin}" />
+              <TextBlock Grid.Column="2" Classes="label" Text="max" Margin="12,0,8,0" />
+              <NumericUpDown Grid.Column="3" Minimum="0" Maximum="100000" FormatString="0" Value="{Binding RandomUploadMax}" />
+            </Grid>
+
+            <CheckBox Content="Jitter the download rate each second (KiB)" IsChecked="{Binding RandomiseDownload}" />
+            <Grid ColumnDefinitions="Auto,90,Auto,90" IsEnabled="{Binding RandomiseDownload}">
+              <TextBlock Grid.Column="0" Classes="label" Text="min" />
+              <NumericUpDown Grid.Column="1" Minimum="0" Maximum="100000" FormatString="0" Value="{Binding RandomDownloadMin}" />
+              <TextBlock Grid.Column="2" Classes="label" Text="max" Margin="12,0,8,0" />
+              <NumericUpDown Grid.Column="3" Minimum="0" Maximum="100000" FormatString="0" Value="{Binding RandomDownloadMax}" />
+            </Grid>
+
+            <Separator Margin="0,4" />
+
+            <CheckBox Content="Re-roll the upload rate before each announce (KiB/s)" IsChecked="{Binding RerollUpload}" />
+            <Grid ColumnDefinitions="Auto,90,Auto,90" IsEnabled="{Binding RerollUpload}">
+              <TextBlock Grid.Column="0" Classes="label" Text="from" />
+              <NumericUpDown Grid.Column="1" Minimum="0" Maximum="100000" FormatString="0" Value="{Binding RerollUploadMin}" />
+              <TextBlock Grid.Column="2" Classes="label" Text="to" Margin="12,0,8,0" />
+              <NumericUpDown Grid.Column="3" Minimum="0" Maximum="100000" FormatString="0" Value="{Binding RerollUploadMax}" />
+            </Grid>
+
+            <CheckBox Content="Re-roll the download rate before each announce (KiB/s)" IsChecked="{Binding RerollDownload}" />
+            <Grid ColumnDefinitions="Auto,90,Auto,90" IsEnabled="{Binding RerollDownload}">
+              <TextBlock Grid.Column="0" Classes="label" Text="from" />
+              <NumericUpDown Grid.Column="1" Minimum="0" Maximum="100000" FormatString="0" Value="{Binding RerollDownloadMin}" />
+              <TextBlock Grid.Column="2" Classes="label" Text="to" Margin="12,0,8,0" />
+              <NumericUpDown Grid.Column="3" Minimum="0" Maximum="100000" FormatString="0" Value="{Binding RerollDownloadMax}" />
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- Options -->
+        <Border Classes="card">
+          <StackPanel Spacing="8">
+            <TextBlock Classes="section" Text="OPTIONS" />
+
+            <CheckBox Content="Answer peer handshakes on the announced port" IsChecked="{Binding ListenForPeers}" />
+            <CheckBox Content="Request scrape statistics" IsChecked="{Binding RequestScrape}" />
+            <CheckBox Content="Keep going when the tracker reports a failure" IsChecked="{Binding IgnoreFailureReason}" />
+            <CheckBox Content="Write to the log" IsChecked="{Binding LogEnabled}" />
+
+            <Grid ColumnDefinitions="Auto,*,Auto,110" Margin="0,4,0,0">
+              <TextBlock Grid.Column="0" Classes="label" Text="Stop" />
+              <ComboBox  Grid.Column="1" HorizontalAlignment="Stretch"
+                         ItemsSource="{Binding StopConditions}" SelectedIndex="{Binding StopConditionIndex}" />
+              <TextBlock Grid.Column="2" Classes="label" Text="value" Margin="12,0,8,0" />
+              <NumericUpDown Grid.Column="3" Minimum="0" Maximum="1000000" FormatString="0.##"
+                             Value="{Binding StopValue}" IsEnabled="{Binding StopValueEnabled}" />
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- Proxy -->
+        <Border Classes="card">
+          <StackPanel Spacing="8">
+            <TextBlock Classes="section" Text="PROXY" />
+
+            <Grid ColumnDefinitions="Auto,*,Auto,110">
+              <TextBlock Grid.Column="0" Classes="label" Text="Type" />
+              <ComboBox  Grid.Column="1" HorizontalAlignment="Stretch"
+                         ItemsSource="{Binding ProxyKinds}" SelectedIndex="{Binding ProxyKindIndex}"
+                         IsEnabled="{Binding IsIdle}" />
+              <TextBlock Grid.Column="2" Classes="label" Text="Port" Margin="12,0,8,0" />
+              <TextBox   Grid.Column="3" Text="{Binding ProxyPort}" IsEnabled="{Binding ProxyEnabled}" />
+            </Grid>
+
+            <Grid ColumnDefinitions="Auto,*" IsEnabled="{Binding ProxyEnabled}">
+              <TextBlock Grid.Column="0" Classes="label" Text="Host" />
+              <TextBox   Grid.Column="1" Text="{Binding ProxyHost}" />
+            </Grid>
+
+            <Grid ColumnDefinitions="Auto,*,Auto,*" IsEnabled="{Binding ProxyEnabled}">
+              <TextBlock Grid.Column="0" Classes="label" Text="User" />
+              <TextBox   Grid.Column="1" Text="{Binding ProxyUser}" />
+              <TextBlock Grid.Column="2" Classes="label" Text="Password" Margin="12,0,8,0" />
+              <TextBox   Grid.Column="3" PasswordChar="•" Text="{Binding ProxyPassword}" />
+            </Grid>
+
+            <TextBlock Opacity="0.6" FontSize="12" TextWrapping="Wrap"
+                       Text="Inbound peer handshakes are disabled while a proxy is in use." />
+          </StackPanel>
+        </Border>
+
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- ================= Right column: control, stats, log ================= -->
+    <Grid Grid.Column="2" RowDefinitions="Auto,Auto,*">
+
+      <!-- Transport controls -->
+      <Border Grid.Row="0" Classes="card">
+        <StackPanel Spacing="10">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Content="Start" Command="{Binding StartCommand}" MinWidth="90" />
+            <Button Content="Stop" Command="{Binding StopCommand}" MinWidth="90" />
+            <Button Content="Announce now" Command="{Binding AnnounceNowCommand}" />
+          </StackPanel>
+
+          <Grid ColumnDefinitions="Auto,*,Auto">
+            <TextBlock Grid.Column="0" Classes="label" Text="{Binding StatusText}" FontWeight="SemiBold" />
+            <ProgressBar Grid.Column="1" Minimum="0" Maximum="100" Height="6"
+                         Value="{Binding ProgressPercent, Mode=OneWay}" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="2" Classes="label" Margin="8,0,0,0" Text="{Binding ProgressText}" />
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <!-- Live counters -->
+      <Border Grid.Row="1" Classes="card">
+        <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
+          <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="Uploaded" />
+          <TextBlock Grid.Row="0" Grid.Column="1" Classes="stat" Text="{Binding UploadedText}" />
+          <TextBlock Grid.Row="0" Grid.Column="2" Classes="label" Text="Downloaded" />
+          <TextBlock Grid.Row="0" Grid.Column="3" Classes="stat" Text="{Binding DownloadedText}" />
+
+          <TextBlock Grid.Row="1" Grid.Column="0" Classes="label" Text="Ratio" Margin="0,6,8,0" />
+          <TextBlock Grid.Row="1" Grid.Column="1" Classes="stat" Margin="0,6,0,0" Text="{Binding RatioText}" />
+          <TextBlock Grid.Row="1" Grid.Column="2" Classes="label" Text="Snatched" Margin="0,6,8,0" />
+          <TextBlock Grid.Row="1" Grid.Column="3" Classes="stat" Margin="0,6,0,0" Text="{Binding FinishedCountText}" />
+
+          <TextBlock Grid.Row="2" Grid.Column="0" Classes="label" Text="Seeders" Margin="0,6,8,0" />
+          <TextBlock Grid.Row="2" Grid.Column="1" Classes="stat" Margin="0,6,0,0" Text="{Binding SeedersText}" />
+          <TextBlock Grid.Row="2" Grid.Column="2" Classes="label" Text="Leechers" Margin="0,6,8,0" />
+          <TextBlock Grid.Row="2" Grid.Column="3" Classes="stat" Margin="0,6,0,0" Text="{Binding LeechersText}" />
+
+          <TextBlock Grid.Row="3" Grid.Column="0" Classes="label" Text="Next announce" Margin="0,6,8,0" />
+          <TextBlock Grid.Row="3" Grid.Column="1" Classes="stat" Margin="0,6,0,0" Text="{Binding NextAnnounceText}" />
+          <TextBlock Grid.Row="3" Grid.Column="2" Classes="label" Text="Running for" Margin="0,6,8,0" />
+          <TextBlock Grid.Row="3" Grid.Column="3" Classes="stat" Margin="0,6,0,0" Text="{Binding ElapsedText}" />
+        </Grid>
+      </Border>
+
+      <!-- Log -->
+      <Border Grid.Row="2" Classes="card" Margin="0">
+        <Grid RowDefinitions="Auto,*">
+          <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+            <TextBlock Grid.Column="0" Classes="section" Text="LOG" VerticalAlignment="Center" Margin="0" />
+            <Button Grid.Column="1" Content="Clear" Command="{Binding ClearLogCommand}" />
+          </Grid>
+
+          <TextBox Grid.Row="1" Name="LogBox"
+                   Classes="stat"
+                   Text="{Binding Log, Mode=OneWay}"
+                   IsReadOnly="True"
+                   AcceptsReturn="True"
+                   TextWrapping="NoWrap"
+                   FontSize="11"
+                   VerticalAlignment="Stretch"
+                   HorizontalAlignment="Stretch" />
+        </Grid>
+      </Border>
+    </Grid>
+  </Grid>
+</UserControl>
