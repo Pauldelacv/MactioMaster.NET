@@ -110,9 +110,36 @@ UpgradeLog*.XML
 # Exclude PHP file containing database passwords
 vc.php
 
-# macOS port build output
-# Note: no "*.app/" rule here — Git is case-insensitive on Windows and macOS,
-# so it would also swallow the RatioMaster.App project directory.
+# --- macOS port ---------------------------------------------------------
+
+# Output of Source.macOS/build/build-macos.sh: the .app bundle, the disk image,
+# the per-RID publish trees and the temporary iconset all live here.
+#
+# WARNING: never add a pattern ending in ".app" (such as "*.app/"). Git matches
+# ignore rules case-insensitively on both Windows and macOS, so it would also
+# swallow the RatioMaster.App project directory and silently drop new source
+# files from commits. Keep the build output confined to artifacts/ instead.
 Source.macOS/artifacts/
+**/artifacts/
 *.dmg
+*.iconset/
+
+# Build logs
+*.binlog
+msbuild.log
+
+# macOS filesystem noise
 .DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+.DocumentRevisions-V100
+.TemporaryItems
+
+# Editors used on macOS
+.idea/
+.vscode/
+*.DotSettings.user
