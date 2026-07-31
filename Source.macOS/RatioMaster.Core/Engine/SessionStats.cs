@@ -25,8 +25,9 @@ public sealed class SessionStats
 
     public bool IsSeeding { get; internal set; }
 
+    /// <summary>Zero until a torrent is loaded, so an idle tab does not read as complete.</summary>
     public double PercentComplete => this.TotalSize <= 0
-        ? 100
+        ? 0
         : Math.Clamp((this.TotalSize - this.Left) * 100.0 / this.TotalSize, 0, 100);
 
     public double? Ratio => this.Downloaded < 100 * 1024 ? null : this.Uploaded / (double)this.Downloaded;

@@ -109,3 +109,10 @@ UpgradeLog*.XML
 
 # Exclude PHP file containing database passwords
 vc.php
+
+# macOS port build output
+# Note: no "*.app/" rule here — Git is case-insensitive on Windows and macOS,
+# so it would also swallow the RatioMaster.App project directory.
+Source.macOS/artifacts/
+*.dmg
+.DS_Store

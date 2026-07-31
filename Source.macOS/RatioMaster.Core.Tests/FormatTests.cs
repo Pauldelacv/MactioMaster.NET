@@ -48,6 +48,12 @@ public class FormatTests
     }
 
     [Fact]
+    public void ProgressIsZeroBeforeATorrentIsLoaded()
+    {
+        Assert.Equal(0, new SessionStats().PercentComplete);
+    }
+
+    [Fact]
     public void JitterStaysInsideItsRangeAndIsZeroWhenDisabled()
     {
         var disabled = new RandomRange { Enabled = false, MinKiB = 5, MaxKiB = 9 };
